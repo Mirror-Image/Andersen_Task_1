@@ -1,0 +1,34 @@
+.play-game {
+  
+  &__header {
+    
+    &-description {
+      text-align: center;
+    }
+  }
+
+  &__main {
+    display: flex;
+    flex-flow: wrap;
+    align-items: center;
+
+    &-section {
+      width: 50%;
+    }
+
+    &-score {
+      width: 50%;
+    }
+
+    &-new-game {
+      width: 100%;
+      margin: 10px;
+
+      &-button {
+        display: flex;
+        justify-content: right;
+        @extend %button;
+      }
+    }
+  }
+}

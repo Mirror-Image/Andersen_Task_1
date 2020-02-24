@@ -1,0 +1,86 @@
+/* xl */
+/* lg */
+/* md */
+/* sm */
+/* xs */
+.create-game__main-form-new-players-button, .create-game__main-form-button, .play-game__main-new-game-button {
+  padding: 10px;
+  float: right;
+  text-decoration: none;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  border: 2px solid red;
+  border-radius: 3px;
+  background-color: red;
+}
+
+.create-game__header-greeting {
+  text-align: center;
+  color: red;
+}
+
+.create-game__main-description {
+  text-align: center;
+}
+
+.create-game__main-form {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.create-game__main-form-player {
+  width: 60%;
+  margin: 10px auto;
+}
+
+.create-game__main-form-player-description {
+  margin-bottom: 0;
+}
+
+.create-game__main-form-new-players-button {
+  margin-bottom: 10px;
+}
+
+.play-game__header-description {
+  text-align: center;
+}
+
+.play-game__main {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-flow: wrap;
+      flex-flow: wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.play-game__main-section {
+  width: 50%;
+}
+
+.play-game__main-score {
+  width: 50%;
+}
+
+.play-game__main-new-game {
+  width: 100%;
+  margin: 10px;
+}
+
+.play-game__main-new-game-button {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: right;
+      -ms-flex-pack: right;
+          justify-content: right;
+}

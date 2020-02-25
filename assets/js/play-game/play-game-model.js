@@ -18,44 +18,61 @@ export default class PlayGameModel {
       [3, 5, 7]
     ];
     this.checkedCellsX = [];
-    this.checkedCellsY = [];
-    this.stepCounter = 0;
+    this.checkedCellsO = [];
+    this.stepCount = 0;
+    this.combinationCount = 0
   }
 
-  bindPlayerStep(data, player) {
+  bindPlayerStep([data, player]) {
     if (player === 'x') {
       this.checkedCellsX.push(data);
-    } else if (player === 'x') {
-      this.checkedCellsY.push(data);
+      console.log(this.checkedCellsX);
+    } else if (player === 'o') {
+      this.checkedCellsO.push(data);
+      console.log(this.checkedCellsO);
     }
-    if (this.checkedCellsX > 2 || this.checkedCellsY > 2 &&
-    this.checkWin(this.checkedCellsX, data) ||
-      this.checkWin(this.checkedCellsY, data)) {
-        observer.fire('winnerFound')
+    if ((this.checkedCellsX.length > 2 ||
+      this.checkedCellsO.length > 2) &&
+      (this.checkWin(this.checkedCellsX, data) ||
+      this.checkWin(this.checkedCellsO, data))) {
+        observer.fire('winnerFound');
+    } else {
+      this.stepCounter();
     }
+  }
 
-
+  stepCounter() {
+    this.stepCount++;
+    this.stepCount === 9 ?
+      observer.fire('messageNoWinner') :
+      observer.fire('messageNextStep');
   }
 
   checkWin(array, lastCellNumber) {
-    let combinationCount = 0;
+    let result = false;
+    //TODO: optimize the code below using Array.filter / forEach
 
     // отсекаем ненужные winCombinations
-    this.winCombinations.map(item => {
+    this.winCombinations.forEach(item => {
       if (item.indexOf(lastCellNumber) !== -1) {
         // проверяем array на соответствие winCombination
+        console.log( item );
         for (let i = 0; i < item.length; i++) {
           if (array.indexOf(item[i]) !== -1) {
-            combinationCount++;
+            this.combinationCount++;
+            console.log( this.combinationCount);
             // как только все 3 цыфры совпали, оповещаем программе об этом
-            if (combinationCount === 3) {
-              return true;
+            if (this.combinationCount === 3) {
+              this.combinationCount = 0;
+              console.log('WINNER');
+              result = true;
             }
           }
         }
-        combinationCount = 0;
+        this.combinationCount = 0;
       }
     });
+    return result;
   }
 
   scoreIncrement(nickName) {

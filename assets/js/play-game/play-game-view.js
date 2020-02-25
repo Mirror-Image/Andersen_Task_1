@@ -10,11 +10,14 @@ export default class PlayGameView {
       .content.cloneNode(true);
     this.anchor.innerHTML = '';
     this.anchor.appendChild(this.templateElement);
-    this.cells = document.querySelectorAll('td');
 
+    this.messageWindow = document.querySelector('.play-game__header-message-window');
+    this.cells = document.querySelectorAll('td');
     this.newGameButton = document.querySelector('.play-game__main-new-game-button');
 
-    this.PlayerSymbol = 'x';
+    this.playerSymbol = 'x';
+
+    this.init();
   }
 
   init() {
@@ -32,13 +35,41 @@ export default class PlayGameView {
   handleSteps(event) {
     let clickedCellData = +event.target.getAttribute('data-cell');
 
-    event.target.innerText = this.PlayerSymbol;
+    event.target.innerText = this.playerSymbol;
 
-    observer.fire('playerStep', clickedCellData, this.PlayerSymbol);
+    observer.fire('playerStep', [clickedCellData, this.playerSymbol]);
+
+    this.changePlayer(this.playerSymbol);
+  }
+
+  changePlayer(player) {
+    player === 'x' ? this.playerSymbol = 'o' : this.playerSymbol = 'x'
+  }
+
+  bindMessageNoWinner() {
+    this.messageWindow.innerText = "That's a draw, brothers! Next time be more attentive!";
+  }
+
+  bindMessageNextPlayer() {
+    this.playerSymbol === 'x' ?
+      this.messageWindow.innerText =
+        'Next turn Player 2' :
+      this.messageWindow.innerText = 'Next turn Player 1';
   }
 
   bindWinnerFound() {
     this.cells.forEach(item =>
     item.removeEventListener('click', this.handleSteps.bind(this)));
+  }
+
+  bindMessageWinner() {
+    console.log( this.playerSymbol );
+    if (this.playerSymbol === 'x') {
+      this.messageWindow.innerText =
+        'Player 1 win!';
+    } else {
+      this.messageWindow.innerText =
+        'Player 2 win!';
+    }
   }
 }

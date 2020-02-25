@@ -8,13 +8,25 @@ export default class PlayGameController {
 
     observer.subscribe('playerStep', this.playerStep.bind(this));
     observer.subscribe('winnerFound', this.winnerFound.bind(this));
+    observer.subscribe('messageNoWinner', this.messageNoWinner.bind(this));
+    observer.subscribe('messageNextStep', this.messageNextStep.bind(this));
   }
 
-  playerStep(data, player) {
-    this.model.bindPlayerStep(data, player);
+  playerStep([data, player]) {
+    console.log( data, player );
+    this.model.bindPlayerStep([data, player]);
+  }
+
+  messageNoWinner() {
+    this.view.bindMessageNoWinner();
+  }
+
+  messageNextStep() {
+    this.view.bindMessageNextPlayer();
   }
 
   winnerFound() {
     this.view.bindWinnerFound();
+    this.view.bindMessageWinner();
   }
 }

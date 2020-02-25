@@ -4,6 +4,8 @@
 /* sm */
 /* xs */
 .create-game__main-form-new-players-button, .create-game__main-form-button, .play-game__main-new-game-button {
+  margin: 0 auto;
+  width: 10%;
   padding: 10px;
   float: right;
   text-decoration: none;
@@ -11,7 +13,7 @@
   text-align: center;
   color: white;
   border: 2px solid red;
-  border-radius: 3px;
+  border-radius: 5px;
   background-color: red;
 }
 
@@ -36,7 +38,7 @@
 }
 
 .create-game__main-form-player {
-  width: 60%;
+  width: 25%;
   margin: 10px auto;
 }
 

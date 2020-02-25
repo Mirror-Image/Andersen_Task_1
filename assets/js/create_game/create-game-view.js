@@ -1,5 +1,6 @@
 import {observer} from "../store/observer.js";
 
+
 export default class CreateGameView {
   constructor(model) {
     this.model = model;

@@ -7,7 +7,7 @@ export default class CreateGameModel {
   }
 
   addUsersData(array) {
-    this.model.push(array[0], array[1]);
+    array.map(item => this.model.push[item]);
     storage.list = array;
     console.log( this.model );
   }

@@ -13,11 +13,15 @@ export default class CreateGameView {
       .content.cloneNode(true);
     this.anchor.appendChild(this.templateElement);
 
-    this.firstPlayerSymbol = document.querySelector('.player-1');
-    this.seconsPlayerSymbol = document.getElementById('second_player_symbol');
+    this.firstPlayerSymbol = document.getElementById('x');
+    this.secondPlayerSymbol = document.getElementById('o');
+    this.seconsPlayerSymbolMessageArea = document.getElementById('second_player_symbol');
 
     this.joinGameButton = document.querySelector('.create-game__main-form-button');
     this.newPlayersButton = document.querySelector('.create-game__main-form-new-players-button');
+
+    this.chosenSymbolPlayer1 = 'x';
+    this.chosenSymbolPlayer2 = 'o';
 
     this.init();
   }
@@ -30,7 +34,32 @@ export default class CreateGameView {
   setupListeners() {
     //TODO: newPlayersButton!
     this.joinGameButton.addEventListener('click', this.handleJoinGame.bind(this));
-    this.firstPlayerSymbol.addEventListener("click", this.handleSecondPlayerSymbol.bind(this));
+    // this.firstPlayerSymbol.addEventListener("click", this.handleSecondPlayerSymbol.bind(this));
+    this.firstPlayerSymbol.addEventListener('click', this.checkSymbolPlayer1.bind(this));
+    this.secondPlayerSymbol.addEventListener('click', this.checkSymbolPlayer1.bind(this));
+  }
+
+  checkNameInStorage(storage, name) {
+    return !!(~storage.indexOf(name));
+  }
+
+  checkSymbolPlayer1(e) {
+    this.toggleSecondPlayerSymbolMessage(e.target.value);
+    this.chosenSymbolPlayer1 =  e.target.value;
+    this.checkSymbolPlayer2(e.target.value);
+  }
+
+  checkSymbolPlayer2(value) {
+    if (value === 'x') {
+      return this.chosenSymbolPlayer2 = 'o';
+    }
+    return this.chosenSymbolPlayer2 = 'x';
+  }
+
+  runPlay() {
+    let playGameModel = new PlayGameModel();
+    let view = new PlayGameView(playGameModel);
+    let playGameController = new PlayGameController(playGameModel, view);
   }
 
   handleJoinGame(event) {
@@ -42,54 +71,19 @@ export default class CreateGameView {
     let dropDownMenuPlayer1 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-1');
     let dropDownMenuPlayer2 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-2');
 
-    let symbol = document.getElementById('x').getAttribute('checked');
+    let nickNamesArray = this.model.model.map(item => item.nick);
+    console.log( nickNamesArray );
+
+    let player1 = this.checkNameInStorage(nickNamesArray, nickNamePlayer1);
+    let player2 = this.checkNameInStorage(nickNamesArray, nickNamePlayer2);
+
+    console.log( this.chosenSymbolPlayer2 );
 
     if (nickNamePlayer1 && nickNamePlayer2) {
-      let nickNamesArray = this.model.model.map(item => item.nick);
-      console.log( nickNamesArray );
 
-      if ((nickNamesArray.indexOf(nickNamePlayer1) === -1 ||
-          nickNamesArray.indexOf(nickNamePlayer2) === -1) &&
-        (nickNamesArray.indexOf(nickNamePlayer2) !== -1 && nickNamesArray.indexOf(nickNamePlayer2) !== -1)) {
-        if (nickNamesArray.indexOf(nickNamePlayer2) !== -1) {
-          if (dropDownMenuPlayer2) {
-            observer.fire('newPlayers',
-                [{nick: nickNamePlayer1, symbol: 'test', score: 0}]
-            );
-
-            let playGameModel = new PlayGameModel();
-            let view = new PlayGameView(playGameModel);
-            let playGameController = new PlayGameController(playGameModel, view);
-
-          } else {
-            alert(`Player 2 with nickname ${nickNamePlayer2} has been existed`);
-            this.createDropDownList('player-2');
-
-          }
-        } else {
-          if (dropDownMenuPlayer1) {
-            observer.fire('newPlayers',
-                {nick: nickNamePlayer2, symbol: 'test', score: 0}
-
-            );
-
-            let playGameModel = new PlayGameModel();
-            let view = new PlayGameView(playGameModel);
-            let playGameController = new PlayGameController(playGameModel, view);
-
-          } else {
-            alert(`Player 1 with nickname ${nickNamePlayer1} has been existed`);
-            this.createDropDownList('player-1');
-          }
-        }
-      } else if (nickNamesArray.indexOf(nickNamePlayer2) !== -1 &&
-        nickNamesArray.indexOf(nickNamePlayer1) !== -1) {
-
+      if (player1 && player2) {
         if (dropDownMenuPlayer1 && dropDownMenuPlayer2) {
-          let playGameModel = new PlayGameModel();
-          let view = new PlayGameView(playGameModel);
-          let playGameController = new PlayGameController(playGameModel, view);
-
+          this.runPlay();
         } else {
           alert('Current users exist. If these are yours - please choose them or create a new');
 
@@ -97,39 +91,60 @@ export default class CreateGameView {
           this.createDropDownList('player-2');
         }
 
-      } else if (nickNamesArray.indexOf(nickNamePlayer2) === -1 &&
-        nickNamesArray.indexOf(nickNamePlayer1) === -1) {
-        if (symbol) {
-          observer.fire('newPlayers', [
-              {nick: nickNamePlayer1, symbol: 'x', score: 0},
-              {nick: nickNamePlayer2, symbol: 'o', score: 0}
-            ]
+      } else if (player1 || player2) {
+        if (dropDownMenuPlayer1) {
+          observer.fire('newPlayers',
+            [{nick: nickNamePlayer2, symbol: 'test', score: 0}]
           );
-        } else {
-          observer.fire('newPlayers', [
-            {nick: nickNamePlayer1, symbol: 'o', score: 0},
-            {nick: nickNamePlayer2, symbol: 'x', score: 0}]);
+          this.runPlay();
+
+        } else if (dropDownMenuPlayer2) {
+          observer.fire('newPlayers',
+            [{nick: nickNamePlayer1, symbol: 'test', score: 0}]
+          );
+          this.runPlay();
+
+        } else if (player1) {
+          alert(`Player 1 with nickname ${nickNamePlayer1} has been existed`);
+          this.createDropDownList('player-1');
+
+        } else if (player2) {
+          alert(`Player 2 with nickname ${nickNamePlayer2} has been existed`);
+          this.createDropDownList('player-2');
         }
 
-        let playGameModel = new PlayGameModel();
-        let view = new PlayGameView(playGameModel);
-        let playGameController = new PlayGameController(playGameModel, view);
+      } else if (!player1 && !player2) {
+        observer.fire('newPlayers', [
+          {nick: nickNamePlayer1, symbol: 'o', score: 0},
+          {nick: nickNamePlayer2, symbol: 'x', score: 0}]);
+        this.runPlay();
+      } else if (player1 && player2) {
+        if (dropDownMenuPlayer1 && dropDownMenuPlayer2) {
+          this.runPlay();
+        } else {
+          alert('Current users exist. If these are yours - please choose them or create a new');
+
+          this.createDropDownList('player-1');
+          this.createDropDownList('player-2');
+        }
       }
-    } else {
-      if (!nickNamePlayer1) {
-        alert('Please enter Player 1 nickname');
-      } else {
-        alert('Please enter Player 2 nickname');
-      }
+    } else if (!player1 && !player2) {
+      alert('Please enter your nicknames in the form below');
+
+    } else if (!player1) {
+      alert('Player1 enter your nickname');
+
+    } else if (!player2) {
+      alert('Player2 enter your nickname');
+
     }
   }
 
-  handleSecondPlayerSymbol(event) {
-    let target = event.target;
-    if (target.id === 'x') {
-      this.seconsPlayerSymbol.innerText = 'Your symbol is "O"';
-    } else if (target.id === 'o') {
-      this.seconsPlayerSymbol.innerText = 'Your symbol is "X"'
+  toggleSecondPlayerSymbolMessage(symbol) {
+    if (symbol === 'x') {
+      this.seconsPlayerSymbolMessageArea.innerText = 'Your symbol is "O"';
+    } else if (symbol === 'o') {
+      this.seconsPlayerSymbolMessageArea.innerText = 'Your symbol is "X"'
     }
   }
 

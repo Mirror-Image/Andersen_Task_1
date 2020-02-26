@@ -91,15 +91,17 @@ export default class CreateGameView {
 
         // если у нас уже активны выпадающие списки с выбором уже существующих в базе игроков
         if (dropDownListPlayer1 && dropDownListPlayer2) {
-          console.log( nickNamePlayer1, nickNamePlayer2 );
+          observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
           this.runPlay();
 
         // если нету выпадающих списков но введенные игроки уже есить базе, то взываем сообщение и запускаем форму выбора и подтверждения среди уже существующих игроков
         } else {
           alert('Current users exist. If these are yours - please choose them or create a new');
 
-          this.createDropDownList('player-1');
-          this.createDropDownList('player-2');
+          this.createDropDownList('player-1', nickNamePlayer1);
+          this.createDropDownList('player-2', nickNamePlayer2);
+
+          observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
         }
 
       // если только один из игроков есть в базе
@@ -107,10 +109,11 @@ export default class CreateGameView {
 
         // если уже есть выпадающий список у Игрока 1
         if (dropDownListPlayer1) {
-          console.log( nickNamePlayer1 );
           observer.fire('newPlayers',
             [{nick: nickNamePlayer2, symbol: this.chosenSymbolPlayer2, score: 0}]
           );
+          observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
+
           this.runPlay();
 
           // если уже есть выпадающий список у Игрока 2
@@ -119,17 +122,23 @@ export default class CreateGameView {
           observer.fire('newPlayers',
             [{nick: nickNamePlayer1, symbol: this.chosenSymbolPlayer1, score: 0}]
           );
+          observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
+
           this.runPlay();
 
         // если Игрок 1 уже существует в базе, то заменяем его форму ввода на выпадающий список для выбора и подтверждения среди существующих игроков в базе
         } else if (player1) {
           alert(`Player 1 with nickname ${nickNamePlayer1} has been existed`);
-          this.createDropDownList('player-1');
+          observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
+
+          this.createDropDownList('player-1', nickNamePlayer1);
 
         // если Игрок 2 уже существует в базе
         } else if (player2) {
           alert(`Player 2 with nickname ${nickNamePlayer2} has been existed`);
-          this.createDropDownList('player-2');
+          observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
+
+          this.createDropDownList('player-2', nickNamePlayer2);
         }
 
       // если оба игрока новые
@@ -138,6 +147,8 @@ export default class CreateGameView {
         observer.fire('newPlayers', [
           {nick: nickNamePlayer1, symbol: this.chosenSymbolPlayer1, score: 0},
           {nick: nickNamePlayer2, symbol: this.chosenSymbolPlayer2, score: 0}]);
+        observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
+
         this.runPlay();
 
       //TODO: (дублирование кода, еще раз проверить и если что, удалить) если оба игрока уже существуют в базе
@@ -183,21 +194,24 @@ export default class CreateGameView {
   }
 
   // заменяем форму ввода на выпадающий список с существующими игроками
-  createDropDownList(player) {
-    let anchor = document.querySelector(`.${player}`).querySelector('.wrapper');
+  createDropDownList(playerOrder, playerName) {
+    let anchor = document.querySelector(`.${playerOrder}`).querySelector('.wrapper');
 
-    let oldChild = document.getElementById(`${player}-nickname`);
+    let oldChild = document.getElementById(`${playerOrder}-nickname`);
     let select = document.createElement('select');
     anchor.replaceChild(select, oldChild);
-    select.className = `create-game__main-form-player-drop-down-nicknames-${player}`;
-    select.id = `${player}-nickname`;
+    select.className = `create-game__main-form-player-drop-down-nicknames-${playerOrder}`;
+    select.id = `${playerOrder}-nickname`;
 
-    let anchorForSelect = document.querySelector(`.create-game__main-form-player-drop-down-nicknames-${player}`);
+    let anchorForSelect = document.querySelector(`.create-game__main-form-player-drop-down-nicknames-${playerOrder}`);
     console.log( this.model.model );
     this.model.model.map(item => {
       let option = document.createElement('option');
       option.innerText = `${item.nick}`;
       option.setAttribute('value', item.nick);
+      if (item.nick === playerName) {
+        option.setAttribute('selected', '');
+      }
       anchorForSelect.appendChild(option);
     });
   }

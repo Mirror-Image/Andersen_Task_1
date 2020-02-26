@@ -1,3 +1,6 @@
+import {localStore} from "./local-storage-component.js";
+
+
 class Store {
   constructor() {
     this.init();
@@ -9,10 +12,10 @@ class Store {
   }
 
   checkLocalStoreData() {
-    let data = localStorage.getItem('tic-tac-data');
+    let data = localStore.getData();
 
     if (data) {
-      this._list = JSON.parse(data);
+      this._list = data;
     } else {
       this._list = [];
     }
@@ -20,7 +23,7 @@ class Store {
 
   set list(array) {
     this._list = [...this._list, ...array];
-    localStorage.setItem('tic-tac-data', JSON.stringify(this.list));
+    localStore.setData(this._list);
   }
 
   get list() {

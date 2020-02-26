@@ -7,9 +7,14 @@ export default class CreateGameController {
     this.view = view;
 
     observer.subscribe('newPlayers', this.addPlayers.bind(this));
+    observer.subscribe('currentPlayersPair', this.addCurrentPlayersPair.bind(this));
   }
 
   addPlayers(array) {
     this.model.addUsersData(array);
+  }
+
+  addCurrentPlayersPair(array) {
+    this.model.addCurrentPlayersPair(array);
   }
 }

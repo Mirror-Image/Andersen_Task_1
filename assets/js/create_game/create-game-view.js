@@ -9,8 +9,7 @@ export default class CreateGameView {
     this.model = model;
 
     this.anchor = document.querySelector("body");
-    this.templateElement = document.querySelector('.create-game')
-      .content.cloneNode(true);
+    this.templateElement = document.querySelector('.create-game').content.cloneNode(true);
     this.anchor.appendChild(this.templateElement);
 
     this.firstPlayerSymbol = document.getElementById('x');
@@ -23,6 +22,9 @@ export default class CreateGameView {
     this.chosenSymbolPlayer1 = 'x';
     this.chosenSymbolPlayer2 = 'o';
 
+    // создаем масив с существующими игроками (для простоты работы в дальнейшем)
+    this.nickNamesArray = this.model.model.map(item => item.nick);
+
     this.init();
   }
 
@@ -32,10 +34,52 @@ export default class CreateGameView {
   }
 
   setupListeners() {
-    //TODO: newPlayersButton!
+    let newPlayer1Input = document.querySelector('.new-player-1');
+    let newPlayer2Input = document.querySelector('.new-player-2');
+
+    if (newPlayer1Input && newPlayer2Input) {
+      newPlayer1Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
+      newPlayer2Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
+
+    } else if (newPlayer1Input || newPlayer2Input) {
+      if (newPlayer1Input) {
+        newPlayer1Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
+
+      } else if (newPlayer2Input) {
+        newPlayer2Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
+      }
+    }
+
+    this.newPlayersButton.addEventListener('click', this.newPlayersWindow.bind(this));
     this.joinGameButton.addEventListener('click', this.handleJoinGame.bind(this));
     this.firstPlayerSymbol.addEventListener('click', this.checkSymbolPlayer1.bind(this));
     this.secondPlayerSymbol.addEventListener('click', this.checkSymbolPlayer1.bind(this));
+
+    document.querySelector('.new-players').addEventListener('click', this.handleJoinGame.bind(this));
+  }
+
+  checkNewNameInStorage(event) {
+    let name = event.target.value;
+
+    console.log( name );
+
+    if (event.target.className === 'create-game__main-form-player-nickname new-player-1') {
+      let message = document.querySelector('.message-player-1');
+
+      if (this.checkNameInStorage(this.nickNamesArray, name)) {
+        message.innerText = 'This name has already exist'
+      } else {
+        message.innerText = 'This name is available'
+      }
+    } else if (event.target.className === 'create-game__main-form-player-nickname new-player-2') {
+      let message = document.querySelector('.message-player-2');
+
+      if (this.checkNameInStorage(this.nickNamesArray, name)) {
+        message.innerText = 'This name has already exist'
+      } else {
+        message.innerText = 'This name is available'
+      }
+    }
   }
 
   // возвращает значение true или false
@@ -70,18 +114,18 @@ export default class CreateGameView {
   handleJoinGame(event) {
     event.preventDefault();
 
-    let nickNamePlayer1 = document.querySelector('#player-1-nickname').value;
-    let nickNamePlayer2 = document.querySelector('#player-2-nickname').value;
+    let inputPlayer1 = document.getElementById('player-1-nickname');
+    let inputPlayer2 = document.getElementById('player-2-nickname');
+
+    let nickNamePlayer1 = inputPlayer1.value;
+    let nickNamePlayer2 = inputPlayer2.value;
 
     let dropDownListPlayer1 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-1');
     let dropDownListPlayer2 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-2');
 
-    // создаем масив с существующими игроками (для простоты работы в дальнейшем)
-    let nickNamesArray = this.model.model.map(item => item.nick);
-
     // проверка введенных имен в существующей базе данных (true/false)
-    let player1 = this.checkNameInStorage(nickNamesArray, nickNamePlayer1);
-    let player2 = this.checkNameInStorage(nickNamesArray, nickNamePlayer2);
+    let player1 = this.checkNameInStorage(this.nickNamesArray, nickNamePlayer1);
+    let player2 = this.checkNameInStorage(this.nickNamesArray, nickNamePlayer2);
 
     //если поля ввода имен игроков не пустые
     if (nickNamePlayer1 && nickNamePlayer2) {
@@ -114,11 +158,11 @@ export default class CreateGameView {
           );
           observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
 
+          console.log( nickNamePlayer1, nickNamePlayer2 );
           this.runPlay();
 
           // если уже есть выпадающий список у Игрока 2
         } else if (dropDownListPlayer2) {
-          console.log( nickNamePlayer2 );
           observer.fire('newPlayers',
             [{nick: nickNamePlayer1, symbol: this.chosenSymbolPlayer1, score: 0}]
           );
@@ -131,12 +175,18 @@ export default class CreateGameView {
           alert(`Player 1 with nickname ${nickNamePlayer1} has been existed`);
           observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
 
+          inputPlayer2.classList.add('new-player-2');
+          this.setupListeners();
+
           this.createDropDownList('player-1', nickNamePlayer1);
 
         // если Игрок 2 уже существует в базе
         } else if (player2) {
           alert(`Player 2 with nickname ${nickNamePlayer2} has been existed`);
           observer.fire('currentPlayersPair', [nickNamePlayer1, nickNamePlayer2]);
+
+          inputPlayer2.classList.add('new-player-1');
+          this.setupListeners();
 
           this.createDropDownList('player-2', nickNamePlayer2);
         }
@@ -180,7 +230,6 @@ export default class CreateGameView {
     // если поле Игрока 2 пустое
     } else if (!nickNamePlayer2) {
       alert('Player2 enter your nickname');
-
     }
   }
 
@@ -214,5 +263,13 @@ export default class CreateGameView {
       }
       anchorForSelect.appendChild(option);
     });
+  }
+
+  newPlayersWindow() {
+    let newPlayersWindowTemplate = document.querySelector('.new-players').content.cloneNode(true);
+    this.anchor.innerHTML = '';
+    this.anchor.appendChild(newPlayersWindowTemplate);
+
+    this.setupListeners()
   }
 }

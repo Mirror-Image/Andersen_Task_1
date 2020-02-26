@@ -15,6 +15,14 @@ class LocalStorageComponent {
     return JSON.parse(res);
   }
 
+  /*setPlayersNamesData(array) {
+    localStorage.setItem('players-name-data', JSON.stringify(array));
+  }
+
+  getPlayersNamesData() {
+    let res = localStorage.getItem('players-name-data');
+    return JSON.parse(res);
+  }*/
   /*set currentPlayersPair(array) {
     localStorage.setItem('currentPlayerPair', JSON.stringify(array));
   }

@@ -19,6 +19,7 @@
 						<input class="create-game__main-form-player-nickname" id="player-1-nickname" type="text" placeholder="Type your nickname here">
 						<input type="radio" id="x" value="x" name="symbol" checked><label for="x">X</label>
 						<input type="radio" id="o" value="o" name="symbol"><label for="o">O</label>
+						<p class="create-game__main-form-player-message message-player-1"></p>
 					</div>
 				</div>
 				<div class="create-game__main-form-player player-2">
@@ -26,10 +27,39 @@
 						<p class="create-game__main-form-player-description">Second player:</p>
 						<input class="create-game__main-form-player-nickname" type="text" id="player-2-nickname" placeholder="Type your nickname here">
 						<span id="second_player_symbol">Your symbol is "O"</span>
+						<p class="create-game__main-form-player-message message-player-2"></p>
 					</div>
 				</div>
 				<a href="#" class="create-game__main-form-new-players-button">New Players</a>
 				<a href="#" class="create-game__main-form-button">Join game</a>
+			</form>
+		</section>
+	</template>
+	<template class="create-game new-players">
+		<header class="create-game__header">
+			<h1 class="create-game__header-greeting">Welcome to Tic-tac toe game</h1>
+		</header>
+		<section class="create-game__main">
+			<h2 class="create-game__main-description">Please enter your nicknames and choose your symbols below:</h2>
+			<form class="create-game__main-form" action="#">
+				<div class="create-game__main-form-player player-1">
+					<div class="wrapper">
+						<p class="create-game__main-form-player-description">First player:</p>
+						<input class="create-game__main-form-player-nickname new-player-1" id="player-1-nickname" type="text" placeholder="Type your nickname here">
+						<input type="radio" id="x" value="x" name="symbol" checked><label for="x">X</label>
+						<input type="radio" id="o" value="o" name="symbol"><label for="o">O</label>
+						<p class="create-game__main-form-player-message message-player-1"></p>
+					</div>
+				</div>
+				<div class="create-game__main-form-player player-2">
+					<div class="wrapper">
+						<p class="create-game__main-form-player-description">Second player:</p>
+						<input class="create-game__main-form-player-nickname new-player-2" type="text" id="player-2-nickname" placeholder="Type your nickname here">
+						<span id="second_player_symbol">Your symbol is "O"</span>
+						<p class="create-game__main-form-player-message message-player-2"></p>
+					</div>
+				</div>
+				<a href="#" class="create-game__main-form-button new-players">Join game</a>
 			</form>
 		</section>
 	</template>

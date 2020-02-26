@@ -6,8 +6,7 @@ export default class PlayGameView {
     this.model = model;
 
     this.anchor = document.querySelector("body");
-    this.templateElement = document.querySelector('.play-game')
-      .content.cloneNode(true);
+    this.templateElement = document.querySelector('.play-game').content.cloneNode(true);
     this.anchor.innerHTML = '';
     this.anchor.appendChild(this.templateElement);
 

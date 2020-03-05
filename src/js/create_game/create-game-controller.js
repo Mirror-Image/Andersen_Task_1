@@ -1,4 +1,4 @@
-import {observer} from "../store/observer.js";
+import { observer } from '../store/observer';
 
 
 export default class CreateGameController {

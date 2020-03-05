@@ -1,0 +1,35 @@
+{
+  "parser": "babel-eslint",
+  "rules": {
+    //    "no-unused-varss": "warn"
+    "no-plusplus": "off",
+    "no-underscore-dangle": "off",
+    "import/prefer-default-export": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "ignoreUrls": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreComments": true
+      }
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowTernary": true
+      }
+    ]
+  },
+  "plugins": [
+    "prettier"
+  ],
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true
+  },
+  "extends": [
+    "airbnb"
+  ]
+}

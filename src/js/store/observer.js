@@ -10,9 +10,9 @@ class Observer {
 
   fire(type, arg) {
     if (this.events[type]) {
-      this.events[type].forEach(listener => listener(arg));
+      this.events[type].forEach((listener) => listener(arg));
     }
   }
 }
 
-export let observer = new Observer();
+export const observer = new Observer();

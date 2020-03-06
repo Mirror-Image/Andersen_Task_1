@@ -168,8 +168,8 @@ export default class CreateGameView {
 
         // если Игрок 1 уже существует в базе, то заменяем его форму ввода на выпадающий список для выбора и подтверждения среди существующих игроков в базе
         } else if (player1) {
-          this.notificationPlace.innerText = `Player 1 with nickname ${nickNamePlayer1} has been existed` +
-            ' If this is your nick - please choose them or create a new one';
+          this.notificationPlace.innerText = `Player 1 with nickname ${nickNamePlayer1} has been existed`
+            + ' If this is your nick - please choose them or create a new one';
 
           // TODO: удалить!
           inputPlayer2.classList.add('new-player-2');
@@ -179,8 +179,8 @@ export default class CreateGameView {
 
         // если Игрок 2 уже существует в базе
         } else if (player2) {
-          this.notificationPlace.innerText = `Player 2 with nickname ${nickNamePlayer2} has been existed` +
-            ' If this is your nick - please choose them or create a new one';
+          this.notificationPlace.innerText = `Player 2 with nickname ${nickNamePlayer2} has been existed`
+            + ' If this is your nick - please choose them or create a new one';
 
           inputPlayer2.classList.add('new-player-1');
           this.setupListeners();

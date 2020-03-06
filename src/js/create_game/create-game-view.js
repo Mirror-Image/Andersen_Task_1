@@ -1,3 +1,4 @@
+import LadderComponent from '../ladder/ladder-component';
 import { observer } from '../store/observer';
 import PlayGameModel from '../play-game/play-game-model';
 import PlayGameView from '../play-game/play-game-view';
@@ -17,7 +18,8 @@ export default class CreateGameView {
     this.seconsPlayerSymbolMessageArea = document.getElementById('second_player_symbol');
 
     this.notificationPlace = document.querySelector('.create-game__main-notification');
-    this.joinGameButton = document.querySelector('.create-game__main-form-button');
+    this.joinGameButton = document.querySelector('.create-game__main-form-buttons-new-game');
+    this.ladderButton = document.querySelector('.create-game__main-form-buttons-ladder');
 
     this.chosenSymbolPlayer1 = 'x';
     this.chosenSymbolPlayer2 = 'o';
@@ -49,8 +51,18 @@ export default class CreateGameView {
     }
 
     this.joinGameButton.addEventListener('click', this.handleJoinGame.bind(this));
+    this.ladderButton.addEventListener('click', this.ladderLoader.bind(this));
     this.firstPlayerSymbol.addEventListener('click', this.checkSymbolPlayer1.bind(this));
     this.secondPlayerSymbol.addEventListener('click', this.checkSymbolPlayer1.bind(this));
+  }
+
+  ladderLoader() {
+    /* eslint-disable no-new */
+    this.anchor.innerHTML = '';
+    // new LadderComponent();
+    new LadderComponent({
+      GameView: CreateGameView,
+    });
   }
 
   checkNewNameInStorage(event) {

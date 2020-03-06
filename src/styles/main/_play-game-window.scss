@@ -1,34 +1,82 @@
 .play-game {
-  
+  width: 100%;
   &__header {
-    
+    width: 100%;
+
     &-description {
+      color: $color-main;
       text-align: center;
+    }
+
+    &-message-window {
+      height: 28px;
+      text-align: center;
+      font-size: 1.5rem;
+      color: $color-white;
     }
   }
 
   &__main {
+    width: 100%;
     display: flex;
     flex-flow: wrap;
     align-items: center;
 
     &-section {
-      width: 50%;
+      margin: 15px;
+      display: flex;
+      justify-content: center;
+      width: 100%;
 
       &-table {
         border-collapse: collapse;
+        table-layout: fixed;
+
+        .x-color {
+          background-color: #ddba22;
+        }
+
+        .y-color {
+          background-color: #57c532;
+        }
 
         td {
-          height: 25px;
-          width: 25px;
-          border: 1px solid black;
+          height: 50px;
+          width: 50px;
+          color: $color-white;
+          font-size: 44px;
+          text-align: center;
+          vertical-align: middle;
+          border: 7px solid $color-main;
           border-collapse: collapse;
         }
       }
     }
 
     &-score {
-      width: 50%;
+      margin: 15px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+
+      &-table {
+        border-collapse: collapse;
+
+        td {
+          padding: 5px;
+          font-size: 1rem;
+          color: $color-white;
+          border: 3px solid $color-white;
+
+          &:nth-of-type(2n - 1) {
+            width: 100px;
+          }
+
+          &:nth-of-type(2n) {
+            width: 150px;
+          }
+        }
+      }
     }
 
     &-new-game {
@@ -39,6 +87,7 @@
         display: flex;
         justify-content: right;
         @extend %button;
+        width: 10%;
       }
     }
   }

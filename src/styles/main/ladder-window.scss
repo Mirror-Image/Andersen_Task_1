@@ -1,0 +1,36 @@
+.ladder {
+
+  &__title {
+    width: 100%;
+    text-align: center;
+    color: $color-main;
+  }
+
+  &__table {
+    width: 80%;
+    border-collapse: collapse;
+
+    th {
+      font-size: 1.5rem;
+      color: $color-white;
+    }
+
+    td, th {
+      border: 1px solid $color-white;
+    }
+
+    td:nth-of-type(2n - 1) {
+      width: 40%;
+      color: $color-main;
+    }
+
+    td:nth-of-type(2) {
+      color: $color-white;
+      text-align: center;
+    }
+  }
+
+  &__return-button {
+    @extend %button;
+  }
+}

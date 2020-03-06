@@ -66,9 +66,11 @@
           border-radius: 5px;
 
           &:focus,
-          &:active {
-            box-shadow: 0 0 15px $color-main;
+          &:active,
+          &:hover {
+            box-shadow: 0 0 20px $color-main, 0 0 15px $color-main, 0 0 10px $color-main;
             outline: none;
+            transition: box-shadow 0.3s linear;
           }
         }
 
@@ -108,8 +110,29 @@
         }
       }
 
-      &-button {
-        @extend %button;
+      &-buttons {
+        display: flex;
+
+        a:first-of-type {
+          margin-right: 30px;
+        }
+
+        &-new-game,
+        &-ladder {
+          @extend %button;
+        }
+
+        &-ladder {
+          background-color: $color-white;
+          color: $color-main;
+
+          &:hover,
+          &:focus {
+            background-color: $color-main;
+            color: $color-white;
+            transition: background-color 0.3s linear;
+          }
+        }
       }
     }
   }

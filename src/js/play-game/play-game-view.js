@@ -11,6 +11,8 @@ export default class PlayGameView {
     this.anchor.appendChild(this.templateElement);
 
     this.messageWindow = document.querySelector('.play-game__header-message-window');
+    this.messageWindow.innerText = ` ${this.model[0].nick} has to turn now`;
+
     this.gameTable = document.querySelector('.play-game__main-section-table');
     this.cells = this.gameTable.querySelectorAll('td');
     this.newGameButton = document.querySelector('.play-game__main-new-game-button');
@@ -37,7 +39,7 @@ export default class PlayGameView {
   }
 
   setupListeners() {
-    this.cells.forEach((item) => item.addEventListener('click', this.test));
+    this.cells.forEach((item) => item.addEventListener('click', this.steps));
 
     this.newGameButton.addEventListener('click', this.resetGame.bind(this));
   }
@@ -50,9 +52,16 @@ export default class PlayGameView {
     observer.fire('playerStep', [clickedCellData, this.playerSymbol]);
 
     this.changePlayer(this.playerSymbol);
+    event.target.removeEventListener('click', this.steps);
+
+    if (this.playerSymbol === 'x') {
+      event.target.classList.add('x-color');
+    } else {
+      event.target.classList.add('y-color');
+    }
   }
 
-  test = this.handleSteps.bind(this);
+  steps = this.handleSteps.bind(this);
 
   changePlayer(player) {
     player === 'x' ? this.playerSymbol = 'o' : this.playerSymbol = 'x';
@@ -69,7 +78,7 @@ export default class PlayGameView {
   }
 
   bindRemoveListeners() {
-    this.cells.forEach((item) => item.removeEventListener('click', this.test));
+    this.cells.forEach((item) => item.removeEventListener('click', this.steps));
   }
 
   bindMessageWinner() {
@@ -98,8 +107,11 @@ export default class PlayGameView {
     this.playerSymbol = 'x';
     this.cells.forEach((item) => {
       item.innerText = '';
+      item.classList.remove('x-color');
+      item.classList.remove('y-color');
       observer.fire('resetGame');
     });
+    this.messageWindow.innerText = ` ${this.model[0].nick} has to turn now`;
     this.setupListeners();
   }
 }

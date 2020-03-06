@@ -90,6 +90,8 @@ export default class PlayGameModel {
     });
   }
 
+  // test
+
   bindResetGame() {
     this.checkedCellsX = [];
     this.checkedCellsO = [];

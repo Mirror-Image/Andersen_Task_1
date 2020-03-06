@@ -34,8 +34,8 @@ export default class CreateGameView {
   }
 
   setupListeners() {
-    const newPlayer1Input = document.querySelector('.new-player-1');
-    const newPlayer2Input = document.querySelector('.new-player-2');
+    const newPlayer1Input = document.getElementById('player-1-nickname');
+    const newPlayer2Input = document.getElementById('player-2-nickname');
 
     if (newPlayer1Input && newPlayer2Input) {
       newPlayer1Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
@@ -76,7 +76,7 @@ export default class CreateGameView {
   }
 
   // возвращает значение true или false
-  checkNameInStorage = (storage, name) => (storage.indexOf(name) === -1 ? false : storage.indexOf(name) !== 0);
+  checkNameInStorage = (storage, name) => (storage.indexOf(name) !== -1);
 
   // определяем каким символом играет Игрок 1
   checkSymbolPlayer1(e) {
@@ -123,7 +123,7 @@ export default class CreateGameView {
     // если поля ввода имен игроков не пустые
     if (nickNamePlayer1 && nickNamePlayer2) {
       if (nickNamePlayer1 === nickNamePlayer2) {
-        this.notificationPlace.innerText = 'You both are trying to enter the same nicknames.'
+        this.notificationPlace.innerText = 'You both are trying to enter the same nicknames. '
           + 'Please enter the different ones';
 
         // если оба игрока уже есть в базе
@@ -138,8 +138,8 @@ export default class CreateGameView {
 
         // если нету выпадающих списков но введенные игроки уже есить базе, то взываем сообщение и запускаем форму выбора и подтверждения среди уже существующих игроков
         } else {
-          this.notificationPlace.innerText = 'Current users have been existed.'
-            + 'If these are yours - please choose them or create a new';
+          this.notificationPlace.innerText = 'Current users have been existed. '
+            + 'If these are yours - please choose them or create a new ones';
           this.createDropDownList('player-1', nickNamePlayer1);
           this.createDropDownList('player-2', nickNamePlayer2);
         }
@@ -168,8 +168,10 @@ export default class CreateGameView {
 
         // если Игрок 1 уже существует в базе, то заменяем его форму ввода на выпадающий список для выбора и подтверждения среди существующих игроков в базе
         } else if (player1) {
-          this.notificationPlace.innerText = `Player 1 with nickname ${nickNamePlayer1} has been existed`;
+          this.notificationPlace.innerText = `Player 1 with nickname ${nickNamePlayer1} has been existed` +
+            ' If this is your nick - please choose them or create a new one';
 
+          // TODO: удалить!
           inputPlayer2.classList.add('new-player-2');
           this.setupListeners();
 
@@ -177,7 +179,8 @@ export default class CreateGameView {
 
         // если Игрок 2 уже существует в базе
         } else if (player2) {
-          this.notificationPlace.innerText = `Player 2 with nickname ${nickNamePlayer2} has been existed`;
+          this.notificationPlace.innerText = `Player 2 with nickname ${nickNamePlayer2} has been existed` +
+            ' If this is your nick - please choose them or create a new one';
 
           inputPlayer2.classList.add('new-player-1');
           this.setupListeners();
@@ -222,7 +225,7 @@ export default class CreateGameView {
 
   // заменяем форму ввода на выпадающий список с существующими игроками
   createDropDownList(playerOrder, playerName) {
-    const anchor = document.querySelector(`.${playerOrder}`).querySelector('.wrapper');
+    const anchor = document.querySelector(`.${playerOrder}`);
 
     const oldChild = document.getElementById(`${playerOrder}-nickname`);
     const select = document.createElement('select');

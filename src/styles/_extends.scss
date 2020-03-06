@@ -1,13 +1,13 @@
 %button {
-  margin: 0 auto;
-  width: 10%;
+  margin: 22px auto;
+  width: 30%;
   padding: 10px;
   float: right;
   text-decoration: none;
   font-weight: bold;
   text-align: center;
   color: white;
-  border: 2px solid red;
+  border: 2px solid $color-main;
   border-radius: 5px;
-  background-color: red;
+  background-color: $color-main;
 }

@@ -1,20 +1,18 @@
 import { observer } from '../store/observer';
+import CreateGameModel from './create-game-model';
 
 
 export default class CreateGameController {
-  constructor(model, view) {
-    this.model = model;
-    this.view = view;
-
-    observer.subscribe('newPlayers', this.addPlayers.bind(this));
-    observer.subscribe('currentPlayersPair', this.addCurrentPlayersPair.bind(this));
+  static onInit() {
+    observer.subscribe('newPlayers', CreateGameController.addPlayers);
+    observer.subscribe('currentPlayersPair', CreateGameController.addCurrentPlayersPair);
   }
 
-  addPlayers(array) {
-    this.model.addUsersData(array);
+  static addPlayers(array) {
+    CreateGameModel.addUsersData(array);
   }
 
-  addCurrentPlayersPair(array) {
-    this.model.addCurrentPlayersPair(array);
+  static addCurrentPlayersPair(array) {
+    CreateGameModel.addCurrentPlayersPair(array);
   }
 }

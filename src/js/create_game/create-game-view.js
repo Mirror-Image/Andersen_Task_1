@@ -25,7 +25,7 @@ export default class CreateGameView {
     this.chosenSymbolPlayer2 = 'o';
 
     // создаем масив с существующими игроками (для простоты работы в дальнейшем)
-    this.nickNamesArray = this.model.model.map((item) => item.nick);
+    this.nickNamesArray = this.model.map((item) => item.nick);
 
     this.init();
   }
@@ -59,7 +59,6 @@ export default class CreateGameView {
   ladderLoader() {
     /* eslint-disable no-new */
     this.anchor.innerHTML = '';
-    // new LadderComponent();
     new LadderComponent({
       GameView: CreateGameView,
     });
@@ -247,7 +246,7 @@ export default class CreateGameView {
 
     const anchorForSelect = document.querySelector(`.create-game__main-form-player-drop-down-nicknames-${playerOrder}`);
 
-    this.model.model.forEach((item) => {
+    this.model.forEach((item) => {
       const option = document.createElement('option');
       option.innerText = `${item.nick}`;
       option.setAttribute('value', item.nick);

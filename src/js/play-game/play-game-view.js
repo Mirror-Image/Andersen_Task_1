@@ -17,16 +17,6 @@ export default class PlayGameView {
     this.cells = this.gameTable.querySelectorAll('td');
     this.newGameButton = document.querySelector('.play-game__main-new-game-button');
 
-    this.handleSteps = function steps(event) {
-      const clickedCellData = +event.target.getAttribute('data-cell');
-      /* eslint-disable no-param-reassign */
-      event.target.innerText = this.playerSymbol;
-
-      observer.fire('playerStep', [clickedCellData, this.playerSymbol]);
-
-      this.changePlayer(this.playerSymbol);
-    };
-
     this.playerSymbol = 'x';
 
     this.init();
@@ -39,29 +29,26 @@ export default class PlayGameView {
   }
 
   setupListeners() {
-    this.cells.forEach((item) => item.addEventListener('click', this.steps));
+    this.cells.forEach((item) => item.addEventListener('click', this.handleSteps));
 
     this.newGameButton.addEventListener('click', this.resetGame.bind(this));
   }
 
-  handleSteps(event) {
+  handleSteps = (event) => {
     const clickedCellData = +event.target.getAttribute('data-cell');
+    const CLASS_LIST_MAP = {
+      x: 'x-color',
+      o: 'y-color',
+    };
     /* eslint-disable no-param-reassign */
     event.target.innerText = this.playerSymbol;
+    event.target.classList.add(CLASS_LIST_MAP[this.playerSymbol]);
 
     observer.fire('playerStep', [clickedCellData, this.playerSymbol]);
 
     this.changePlayer(this.playerSymbol);
-    event.target.removeEventListener('click', this.steps);
-
-    if (this.playerSymbol === 'x') {
-      event.target.classList.add('x-color');
-    } else {
-      event.target.classList.add('y-color');
-    }
-  }
-
-  steps = this.handleSteps.bind(this);
+    event.target.removeEventListener('click', this.handleSteps);
+  };
 
   changePlayer(player) {
     player === 'x' ? this.playerSymbol = 'o' : this.playerSymbol = 'x';
@@ -78,7 +65,7 @@ export default class PlayGameView {
   }
 
   bindRemoveListeners() {
-    this.cells.forEach((item) => item.removeEventListener('click', this.steps));
+    this.cells.forEach((item) => item.removeEventListener('click', this.handleSteps));
   }
 
   bindMessageWinner() {
@@ -90,17 +77,25 @@ export default class PlayGameView {
   }
 
   scoreTable() {
-    const nickPayer1 = document.getElementById('first_player_nick');
-    const nickPayer2 = document.getElementById('second_player_nick');
-
-    const scorePayer1 = document.getElementById('first_player_score');
-    const scorePayer2 = document.getElementById('second_player_score');
-
-    nickPayer1.innerText = this.model[0].nick;
-    nickPayer2.innerText = this.model[1].nick;
-
-    scorePayer1.innerText = this.model[0].currentScore;
-    scorePayer2.innerText = this.model[1].currentScore;
+    const [firstPlayer, secondPlayer] = this.model;
+    const elements = [
+      {
+        nickID: 'first_player_nick',
+        scoreID: 'first_player_score',
+        nick: firstPlayer.nick,
+        score: firstPlayer.currentScore,
+      },
+      {
+        nickID: 'second_player_nick',
+        scoreID: 'second_player_score',
+        nick: secondPlayer.nick,
+        score: secondPlayer.currentScore,
+      },
+    ];
+    elements.forEach((currentItem) => {
+      document.getElementById(`${currentItem.nickID}`).innerText = currentItem.nick;
+      document.getElementById(`${currentItem.scoreID}`).innerText = currentItem.score;
+    });
   }
 
   resetGame() {

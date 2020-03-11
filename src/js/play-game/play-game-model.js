@@ -31,10 +31,12 @@ export default class PlayGameModel {
       this.checkedCellsO.push(data);
     }
 
-    if ((this.checkedCellsX.length > 2
-      || this.checkedCellsO.length > 2)
-      && (this.checkWin(this.checkedCellsX, data)
-      || this.checkWin(this.checkedCellsO, data))) {
+    const isPossibleToFindWinner = (this.checkedCellsX.length > 2
+                                    || this.checkedCellsO.length > 2)
+                                    && (this.checkWin(this.checkedCellsX, data)
+                                    || this.checkWin(this.checkedCellsO, data));
+
+    if (isPossibleToFindWinner) {
       if (this.checkWin(this.checkedCellsX, data)) {
         observer.fire('winnerFound', this.currentPlayers[0].nick);
       } else {
@@ -77,17 +79,21 @@ export default class PlayGameModel {
   }
 
   scoreIncrement(nickName) {
-    this.currentPlayers.forEach((item) => {
-      if (item.nick === nickName) {
-        item.currentScore++; // eslint-disable-line no-param-reassign
+    this.currentPlayers = this.currentPlayers.reduce((result, currentItem) => {
+      if (currentItem.nick === nickName) {
+        currentItem.currentScore++; // eslint-disable-line no-param-reassign
       }
-    });
-    this.model.forEach((item) => {
+      return [...result, currentItem];
+    }, []);
+
+    this.model = this.model.reduce((result, item) => {
       if (item.nick === nickName) {
         item.score++; // eslint-disable-line no-param-reassign
-        storage.updateList(this.model);
       }
-    });
+      return [...result, item];
+    }, []);
+
+    storage.updateList(this.model.sort((itemA, itemB) => itemB.score - itemA.score));
   }
 
   // test

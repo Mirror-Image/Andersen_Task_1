@@ -113,7 +113,7 @@ export default class CreateGameView {
     new PlayGameController(playGameModel, view);
   };
 
-  // Вся логика системы входа и игру
+  // Вся логика системы входа в игру
   // TODO: подумать как можно её разбить на более простые методы для удобства восприятия
   handleJoinGame(event) {
     event.preventDefault();
@@ -182,8 +182,6 @@ export default class CreateGameView {
           this.notificationPlace.innerText = `Player 1 with nickname ${nickNamePlayer1} has been existed`
             + ' If this is your nick - please choose them or create a new one';
 
-          // TODO: удалить!
-          inputPlayer2.classList.add('new-player-2');
           this.setupListeners();
 
           this.createDropDownList('player-1', nickNamePlayer1);
@@ -193,7 +191,6 @@ export default class CreateGameView {
           this.notificationPlace.innerText = `Player 2 with nickname ${nickNamePlayer2} has been existed`
             + ' If this is your nick - please choose them or create a new one';
 
-          inputPlayer2.classList.add('new-player-1');
           this.setupListeners();
 
           this.createDropDownList('player-2', nickNamePlayer2);

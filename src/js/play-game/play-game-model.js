@@ -56,13 +56,24 @@ export default class PlayGameModel {
 
   checkWin(array, lastCellNumber) {
     let result = false;
-    // TODO: optimize the code below using Array.filter / forEach
 
     // отсекаем ненужные winCombinations
     this.winCombinations.forEach((item) => {
       if (item.indexOf(lastCellNumber) !== -1) {
         // проверяем array на соответствие winCombination
-        for (let i = 0; i < item.length; i++) {
+        item.forEach((number) => {
+          if (array.indexOf(number) !== -1) {
+            this.combinationCount++;
+
+            // как только все 3 цыфры совпали, оповещаем программе об этом
+            if (this.combinationCount === 3) {
+              this.combinationCount = 0;
+              result = true;
+            }
+          }
+        });
+
+        /* for (let i = 0; i < item.length; i++) {
           if (array.indexOf(item[i]) !== -1) {
             this.combinationCount++;
             // как только все 3 цыфры совпали, оповещаем программе об этом
@@ -71,10 +82,11 @@ export default class PlayGameModel {
               result = true;
             }
           }
-        }
+        } */
         this.combinationCount = 0;
       }
     });
+
     return result;
   }
 

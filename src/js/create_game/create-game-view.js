@@ -13,8 +13,8 @@ export default class CreateGameView {
     this.templateElement = document.querySelector('.create-game').content.cloneNode(true);
     this.anchor.appendChild(this.templateElement);
 
-    this.firstPlayerSymbol = document.getElementById('x');
-    this.secondPlayerSymbol = document.getElementById('o');
+    this.radioCollection = document.querySelectorAll('.create-game__main-form-player-radio-symbol');
+
     this.seconsPlayerSymbolMessageArea = document.getElementById('second_player_symbol');
 
     this.notificationPlace = document.querySelector('.create-game__main-notification');
@@ -36,24 +36,16 @@ export default class CreateGameView {
   }
 
   setupListeners() {
-    const newPlayer1Input = document.getElementById('player-1-nickname');
-    const newPlayer2Input = document.getElementById('player-2-nickname');
+    const playerInputCollection = document.querySelectorAll('.create-game__main-form-player-nickname');
 
-    if (newPlayer1Input && newPlayer2Input) {
-      newPlayer1Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
-      newPlayer2Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
-    } else if (newPlayer1Input || newPlayer2Input) {
-      if (newPlayer1Input) {
-        newPlayer1Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
-      } else if (newPlayer2Input) {
-        newPlayer2Input.addEventListener('keyup', this.checkNewNameInStorage.bind(this));
-      }
-    }
+    playerInputCollection.forEach((item) => {
+      item.addEventListener('keyup', this.messageIsTypingNameAvailable.bind(this));
+    });
+
+    this.radioCollection.forEach((radio) => radio.addEventListener('click', this.checkSymbolPlayer1.bind(this)));
 
     this.joinGameButton.addEventListener('click', this.handleJoinGame.bind(this));
     this.ladderButton.addEventListener('click', this.ladderLoader.bind(this));
-    this.firstPlayerSymbol.addEventListener('click', this.checkSymbolPlayer1.bind(this));
-    this.secondPlayerSymbol.addEventListener('click', this.checkSymbolPlayer1.bind(this));
   }
 
   ladderLoader() {
@@ -64,36 +56,34 @@ export default class CreateGameView {
     });
   }
 
-  checkNewNameInStorage(event) {
+  messageIsTypingNameAvailable(event) {
     const name = event.target.value;
+    const messageWindow = event.target.nextElementSibling.firstElementChild;
 
-    if (event.target.className === 'create-game__main-form-player-nickname new-player-1') {
-      const message = document.querySelector('.message-player-1');
-
-      if (this.checkNameInStorage(this.nickNamesArray, name)) {
-        message.innerText = 'This name has already exist';
-      } else {
-        message.innerText = 'This name is available';
-      }
-    } else if (event.target.className === 'create-game__main-form-player-nickname new-player-2') {
-      const message = document.querySelector('.message-player-2');
-
-      if (this.checkNameInStorage(this.nickNamesArray, name)) {
-        message.innerText = 'This name has already exist';
-      } else {
-        message.innerText = 'This name is available';
-      }
+    if (this.isNameInStorage(this.nickNamesArray, name)) {
+      messageWindow.innerText = 'This name has already exist';
+    } else {
+      messageWindow.innerText = 'This name is available';
     }
   }
 
   // возвращает значение true или false
-  checkNameInStorage = (storage, name) => (storage.indexOf(name) !== -1);
+  isNameInStorage = (storage, name) => (storage.indexOf(name) !== -1);
 
   // определяем каким символом играет Игрок 1
   checkSymbolPlayer1(e) {
     this.toggleSecondPlayerSymbolMessage(e.target.value);
     this.chosenSymbolPlayer1 = e.target.value;
     this.checkSymbolPlayer2(e.target.value);
+  }
+
+  // выводим сообщение каким символом играет Игрок 2. (зависит от выбора Игрока 1)
+  toggleSecondPlayerSymbolMessage(symbol) {
+    if (symbol === 'x') {
+      this.seconsPlayerSymbolMessageArea.innerText = 'Your symbol is "O"';
+    } else if (symbol === 'o') {
+      this.seconsPlayerSymbolMessageArea.innerText = 'Your symbol is "X"';
+    }
   }
 
   // определяем каким символом играет Игрок 2
@@ -111,10 +101,9 @@ export default class CreateGameView {
     const view = new PlayGameView(playGameModel);
     /* eslint-disable no-new */
     new PlayGameController(playGameModel, view);
-  };
+  }
 
   // Вся логика системы входа в игру
-  // TODO: подумать как можно её разбить на более простые методы для удобства восприятия
   handleJoinGame(event) {
     event.preventDefault();
 
@@ -128,8 +117,8 @@ export default class CreateGameView {
     const dropDownListPlayer2 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-2');
 
     // проверка введенных имен в существующей базе данных (true/false)
-    const player1 = this.checkNameInStorage(this.nickNamesArray, nickNamePlayer1);
-    const player2 = this.checkNameInStorage(this.nickNamesArray, nickNamePlayer2);
+    const player1 = this.isNameInStorage(this.nickNamesArray, nickNamePlayer1);
+    const player2 = this.isNameInStorage(this.nickNamesArray, nickNamePlayer2);
 
     // если поля ввода имен игроков не пустые
     if (nickNamePlayer1 && nickNamePlayer2) {
@@ -157,43 +146,23 @@ export default class CreateGameView {
 
       // если только один из игроков есть в базе
       } else if (player1 || player2) {
-        // если уже есть выпадающий список у Игрока 1
-        if (dropDownListPlayer1) {
+        // если уже есть выпадающий список
+        if (dropDownListPlayer1 || dropDownListPlayer2) {
           observer.fire('newPlayers',
-            [{ nick: nickNamePlayer2, score: 0 }]);
+            [{ nick: dropDownListPlayer1 ? nickNamePlayer2 : nickNamePlayer1, score: 0 }]);
+
           observer.fire('currentPlayersPair', [
             { nick: nickNamePlayer1, symbol: this.chosenSymbolPlayer1, currentScore: 0 },
             { nick: nickNamePlayer2, symbol: this.chosenSymbolPlayer2, currentScore: 0 }]);
 
           this.runPlay();
-
-          // если уже есть выпадающий список у Игрока 2
-        } else if (dropDownListPlayer2) {
-          observer.fire('newPlayers',
-            [{ nick: nickNamePlayer1, score: 0 }]);
-          observer.fire('currentPlayersPair', [
-            { nick: nickNamePlayer1, symbol: this.chosenSymbolPlayer1, currentScore: 0 },
-            { nick: nickNamePlayer2, symbol: this.chosenSymbolPlayer2, currentScore: 0 }]);
-
-          this.runPlay();
-
-        // если Игрок 1 уже существует в базе, то заменяем его форму ввода на выпадающий список для выбора и подтверждения среди существующих игроков в базе
-        } else if (player1) {
-          this.notificationPlace.innerText = `Player 1 with nickname ${nickNamePlayer1} has been existed`
-            + ' If this is your nick - please choose them or create a new one';
+        } else if (player1 || player2) {
+          this.notificationPlace.innerText = `Player with nickname ${player1 ? nickNamePlayer1 : nickNamePlayer2} has been existed`
+            + ' If this is your nick - please choose it or create a new one';
 
           this.setupListeners();
 
-          this.createDropDownList('player-1', nickNamePlayer1);
-
-        // если Игрок 2 уже существует в базе
-        } else if (player2) {
-          this.notificationPlace.innerText = `Player 2 with nickname ${nickNamePlayer2} has been existed`
-            + ' If this is your nick - please choose them or create a new one';
-
-          this.setupListeners();
-
-          this.createDropDownList('player-2', nickNamePlayer2);
+          this.createDropDownList(player1 ? 'player-1' : 'player-2', player1 ? nickNamePlayer1 : nickNamePlayer2);
         }
 
       // если оба игрока новые
@@ -208,26 +177,14 @@ export default class CreateGameView {
         this.runPlay();
       }
 
-    // если оба поля ввода пустые
-    } else if (!nickNamePlayer1 && !nickNamePlayer2) {
-      this.notificationPlace.innerText = 'Please enter your nicknames in the form below';
-
-    // если поле ввода Игрока 1 пустое
-    } else if (!nickNamePlayer1) {
-      this.notificationPlace.innerText = 'Player1 enter your nickname';
-
-    // если поле Игрока 2 пустое
-    } else if (!nickNamePlayer2) {
-      this.notificationPlace.innerText = 'Player2 enter your nickname';
-    }
-  }
-
-  // выводим сообщение каким символом играет Игрок 2. (зависит от выбора Игрока 1)
-  toggleSecondPlayerSymbolMessage(symbol) {
-    if (symbol === 'x') {
-      this.seconsPlayerSymbolMessageArea.innerText = 'Your symbol is "O"';
-    } else if (symbol === 'o') {
-      this.seconsPlayerSymbolMessageArea.innerText = 'Your symbol is "X"';
+    // если поля ввода пустые
+    } else if (!nickNamePlayer1 || !nickNamePlayer2) {
+      /* eslint-disable no-nested-ternary */
+      !nickNamePlayer1 && !nickNamePlayer2
+        ? this.notificationPlace.innerText = 'Please enter your nicknames in the form below'
+        : !nickNamePlayer1
+          ? this.notificationPlace.innerText = 'Player1 enter your nickname'
+          : this.notificationPlace.innerText = 'Player2 enter your nickname';
     }
   }
 

@@ -114,6 +114,10 @@ export default class CreateGameView {
     return inputNode.value.trim() === '' ? false : inputNode.value.trim();
   }
 
+  isDropDownList(player) {
+    return document.querySelector(`.create-game__main-form-player-drop-down-nicknames-${player}`) !== null;
+  }
+
   handleFire(firstPlayerNick, secondPlayerNick, isPlayerNew) {
     if (isPlayerNew) {
       observer.fire('newPlayers',
@@ -140,8 +144,8 @@ export default class CreateGameView {
     const nickNamePlayer1 = this.isInputValue(inputPlayer1);
     const nickNamePlayer2 = this.isInputValue(inputPlayer2);
 
-    const dropDownListPlayer1 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-1');
-    const dropDownListPlayer2 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-2');
+    const isDropDownListPlayer1 = this.isDropDownList('player-1');
+    const isDropDownListPlayer2 = this.isDropDownList('player-2');
 
     // проверка введенных имен в существующей базе данных (true/false)
     const player1 = this.isNameInStorage(this.nickNamesArray, nickNamePlayer1);
@@ -156,7 +160,7 @@ export default class CreateGameView {
         // если оба игрока уже есть в базе
       } else if (player1 && player2) {
         // если у нас уже активны выпадающие списки с выбором уже существующих в базе игроков
-        if (dropDownListPlayer1 && dropDownListPlayer2) {
+        if (isDropDownListPlayer1 && isDropDownListPlayer2) {
           this.handleFire(nickNamePlayer1, nickNamePlayer2, false);
           this.runPlay();
 
@@ -171,7 +175,7 @@ export default class CreateGameView {
       // если только один из игроков есть в базе
       } else if (player1 || player2) {
         // если уже есть выпадающий список
-        if (dropDownListPlayer1 || dropDownListPlayer2) {
+        if (isDropDownListPlayer1 || isDropDownListPlayer2) {
           this.handleFire(nickNamePlayer1, nickNamePlayer2, true);
           this.runPlay();
         } else if (player1 || player2) {

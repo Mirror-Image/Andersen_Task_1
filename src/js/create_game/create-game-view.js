@@ -27,6 +27,12 @@ export default class CreateGameView {
     // создаем масив с существующими игроками (для простоты работы в дальнейшем)
     this.nickNamesArray = this.model.map((item) => item.nick);
 
+    this.messageIsTypingNameAvailable = this.messageIsTypingNameAvailable.bind(this);
+    this.checkSymbolPlayer1 = this.checkSymbolPlayer1.bind(this);
+    this.handleJoinGame = this.handleJoinGame.bind(this);
+    this.ladderLoader = this.ladderLoader.bind(this);
+
+
     this.init();
   }
 
@@ -39,13 +45,13 @@ export default class CreateGameView {
     const playerInputCollection = document.querySelectorAll('.create-game__main-form-player-nickname');
 
     playerInputCollection.forEach((item) => {
-      item.addEventListener('keyup', this.messageIsTypingNameAvailable.bind(this));
+      item.addEventListener('keyup', this.messageIsTypingNameAvailable);
     });
 
-    this.radioCollection.forEach((radio) => radio.addEventListener('click', this.checkSymbolPlayer1.bind(this)));
+    this.radioCollection.forEach((radio) => radio.addEventListener('click', this.checkSymbolPlayer1));
 
-    this.joinGameButton.addEventListener('click', this.handleJoinGame.bind(this));
-    this.ladderButton.addEventListener('click', this.ladderLoader.bind(this));
+    this.joinGameButton.addEventListener('click', this.handleJoinGame);
+    this.ladderButton.addEventListener('click', this.ladderLoader);
   }
 
   ladderLoader() {
@@ -57,13 +63,17 @@ export default class CreateGameView {
   }
 
   messageIsTypingNameAvailable(event) {
-    const name = event.target.value;
     const messageWindow = event.target.nextElementSibling.firstElementChild;
+    let name = false;
+    event.target.value.trim() !== '' ? name = event.target.value.trim()
+      : messageWindow.innerText = 'Please enter a correct nickname';
 
-    if (this.isNameInStorage(this.nickNamesArray, name)) {
-      messageWindow.innerText = 'This name has already exist';
-    } else {
-      messageWindow.innerText = 'This name is available';
+    if (name) {
+      if (this.isNameInStorage(this.nickNamesArray, name)) {
+        messageWindow.innerText = 'This name has already exist';
+      } else {
+        messageWindow.innerText = 'This name is available';
+      }
     }
   }
 
@@ -79,11 +89,7 @@ export default class CreateGameView {
 
   // выводим сообщение каким символом играет Игрок 2. (зависит от выбора Игрока 1)
   toggleSecondPlayerSymbolMessage(symbol) {
-    if (symbol === 'x') {
-      this.seconsPlayerSymbolMessageArea.innerText = 'Your symbol is "O"';
-    } else if (symbol === 'o') {
-      this.seconsPlayerSymbolMessageArea.innerText = 'Your symbol is "X"';
-    }
+    this.seconsPlayerSymbolMessageArea.innerText = `Your symbol is ${symbol === 'x' ? '"O"' : '"X"'}`;
   }
 
   // определяем каким символом играет Игрок 2
@@ -103,6 +109,27 @@ export default class CreateGameView {
     new PlayGameController(playGameModel, view);
   }
 
+  /* eslint-disable  class-methods-use-this */
+  isInputValue(inputNode) {
+    return inputNode.value.trim() === '' ? false : inputNode.value.trim();
+  }
+
+  handleFire(firstPlayerNick, secondPlayerNick, isPlayerNew) {
+    if (isPlayerNew) {
+      observer.fire('newPlayers',
+        /* eslint-disable no-nested-ternary */
+        firstPlayerNick && secondPlayerNick
+          ? [{ nick: firstPlayerNick, score: 0 }, { nick: secondPlayerNick, score: 0 }]
+          : firstPlayerNick
+            ? [{ nick: firstPlayerNick, score: 0 }]
+            : [{ nick: secondPlayerNick, score: 0 }]);
+    }
+
+    observer.fire('currentPlayersPair', [
+      { nick: firstPlayerNick, symbol: this.chosenSymbolPlayer1, score: 0 },
+      { nick: secondPlayerNick, symbol: this.chosenSymbolPlayer2, score: 0 }]);
+  }
+
   // Вся логика системы входа в игру
   handleJoinGame(event) {
     event.preventDefault();
@@ -110,8 +137,8 @@ export default class CreateGameView {
     const inputPlayer1 = document.getElementById('player-1-nickname');
     const inputPlayer2 = document.getElementById('player-2-nickname');
 
-    const nickNamePlayer1 = inputPlayer1.value;
-    const nickNamePlayer2 = inputPlayer2.value;
+    const nickNamePlayer1 = this.isInputValue(inputPlayer1);
+    const nickNamePlayer2 = this.isInputValue(inputPlayer2);
 
     const dropDownListPlayer1 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-1');
     const dropDownListPlayer2 = document.querySelector('.create-game__main-form-player-drop-down-nicknames-player-2');
@@ -130,10 +157,7 @@ export default class CreateGameView {
       } else if (player1 && player2) {
         // если у нас уже активны выпадающие списки с выбором уже существующих в базе игроков
         if (dropDownListPlayer1 && dropDownListPlayer2) {
-          observer.fire('currentPlayersPair', [
-            { nick: nickNamePlayer1, symbol: this.chosenSymbolPlayer1, currentScore: 0 },
-            { nick: nickNamePlayer2, symbol: this.chosenSymbolPlayer2, currentScore: 0 }]);
-
+          this.handleFire(nickNamePlayer1, nickNamePlayer2, false);
           this.runPlay();
 
         // если нету выпадающих списков но введенные игроки уже есить базе, то взываем сообщение и запускаем форму выбора и подтверждения среди уже существующих игроков
@@ -148,13 +172,7 @@ export default class CreateGameView {
       } else if (player1 || player2) {
         // если уже есть выпадающий список
         if (dropDownListPlayer1 || dropDownListPlayer2) {
-          observer.fire('newPlayers',
-            [{ nick: dropDownListPlayer1 ? nickNamePlayer2 : nickNamePlayer1, score: 0 }]);
-
-          observer.fire('currentPlayersPair', [
-            { nick: nickNamePlayer1, symbol: this.chosenSymbolPlayer1, currentScore: 0 },
-            { nick: nickNamePlayer2, symbol: this.chosenSymbolPlayer2, currentScore: 0 }]);
-
+          this.handleFire(nickNamePlayer1, nickNamePlayer2, true);
           this.runPlay();
         } else if (player1 || player2) {
           this.notificationPlace.innerText = `Player with nickname ${player1 ? nickNamePlayer1 : nickNamePlayer2} has been existed`
@@ -167,13 +185,7 @@ export default class CreateGameView {
 
       // если оба игрока новые
       } else if (!player1 && !player2) {
-        observer.fire('newPlayers', [
-          { nick: nickNamePlayer1, score: 0 },
-          { nick: nickNamePlayer2, score: 0 }]);
-        observer.fire('currentPlayersPair', [
-          { nick: nickNamePlayer1, symbol: this.chosenSymbolPlayer1, currentScore: 0 },
-          { nick: nickNamePlayer2, symbol: this.chosenSymbolPlayer2, currentScore: 0 }]);
-
+        this.handleFire(nickNamePlayer1, nickNamePlayer2, true);
         this.runPlay();
       }
 

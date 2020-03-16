@@ -2,6 +2,7 @@ import { storage } from '../store/store';
 import { observer } from '../store/observer';
 import CreateGameModel from '../create_game/create-game-model';
 import CreateGameController from '../create_game/create-game-controller';
+import { ladderData } from '../helpers';
 
 
 export default class LadderComponent {
@@ -11,45 +12,8 @@ export default class LadderComponent {
     LadderComponent.GameViewConstructor = GameView;
     this.anchor = document.querySelector('.app');
     this.model = storage.list;
-
-    this.data = {
-      type: 'table',
-      class: 'ladder__table',
-      text: null,
-      children: [
-        {
-          type: 'thead',
-          class: null,
-          text: null,
-          children: {
-            type: 'tr',
-            class: null,
-            text: null,
-            children: [
-              {
-                type: 'th',
-                class: null,
-                text: 'Nickname',
-                children: null,
-              },
-              {
-                type: 'th',
-                class: null,
-                text: 'Score',
-                children: null,
-              },
-            ],
-          },
-        },
-        {
-          type: 'tbody',
-          class: null,
-          text: null,
-          children: [],
-        },
-      ],
-    };
-
+    this.data = ladderData;
+    this.handleReturn = this.handleReturn.bind(this);
     this.init();
   }
 
@@ -83,7 +47,7 @@ export default class LadderComponent {
   }
 
   init() {
-    this.createTableData(this.model);
+    this.data.children[1].children.length === 0 ? this.createTableData(this.model) : this;
     this.anchor.appendChild(this.recursiveRender(this.data));
     this.renderButton();
     this.setupListeners();
@@ -122,14 +86,14 @@ export default class LadderComponent {
 
   setupListeners() {
     const returnButton = document.querySelector('.ladder__return-button');
-    observer.subscribe('returnToMainPage', this.handleReturn.bind(this));
+    observer.subscribe('returnToMainPage', this.handleReturn);
 
     returnButton.addEventListener('click',
       () => observer.fire('returnToMainPage'));
   }
 
   handleReturn() {
-    observer.unsubscribe('returnToMainPage', this.handleReturn.bind(this));
+    observer.unsubscribe('returnToMainPage', this.handleReturn);
     this.anchor.innerHTML = '';
 
     CreateGameModel.init();

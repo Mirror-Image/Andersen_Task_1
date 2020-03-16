@@ -19,6 +19,8 @@ export default class PlayGameView {
 
     this.playerSymbol = 'x';
 
+    this.resetGame = this.resetGame.bind(this);
+
     this.init();
   }
 
@@ -31,7 +33,7 @@ export default class PlayGameView {
   setupListeners() {
     this.cells.forEach((item) => item.addEventListener('click', this.handleSteps));
 
-    this.newGameButton.addEventListener('click', this.resetGame.bind(this));
+    this.newGameButton.addEventListener('click', this.resetGame);
   }
 
   handleSteps = (event) => {
@@ -83,13 +85,13 @@ export default class PlayGameView {
         nickID: 'first_player_nick',
         scoreID: 'first_player_score',
         nick: firstPlayer.nick,
-        score: firstPlayer.currentScore,
+        score: firstPlayer.score,
       },
       {
         nickID: 'second_player_nick',
         scoreID: 'second_player_score',
         nick: secondPlayer.nick,
-        score: secondPlayer.currentScore,
+        score: secondPlayer.score,
       },
     ];
     elements.forEach((currentItem) => {
